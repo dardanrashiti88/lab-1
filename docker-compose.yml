@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Database service
+  db:
+    image: mysql:5.7
+    container_name: db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - devops_network
+
+  # Backend service (Flask API)
+  backend:
+    build: ./backend
+    container_name: backend
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - FLASK_APP=${FLASK_APP}
+      - FLASK_ENV=${FLASK_ENV}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - devops_network
+
+  # Prometheus service
+  prometheus:
+    image: prom/prometheus:v2.33.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    environment:
+      - SCRAPE_INTERVAL=${PROMETHEUS_SCRAPE_INTERVAL}
+    networks:
+      - devops_network
+    restart: always
+
+  # Grafana service
+  grafana:
+    image: grafana/grafana:8.3.3
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - devops_network
+    restart: always
+
+  # Node Exporter service (Optional, for system metrics)
+  node-exporter:
+    image: prom/node-exporter:v1.3.1
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - devops_network
+
+networks:
+  devops_network:
+    driver: bridge

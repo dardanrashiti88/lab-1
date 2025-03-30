@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s  # How often Prometheus scrapes targets
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape your application (backend)
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:5000']  # Change this to match your backend service name and port
+  
+  # Scrape Node Exporter (if you are using it to gather system metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']  # Replace with the actual target where your node exporter is running
+
+  # Additional scraping configurations can go here for other services, e.g., databases or custom exporters
