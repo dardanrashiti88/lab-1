@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Clones the repository
+        uses: actions/checkout@v3 
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -42,8 +42,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./backend  # Correct context for the Python app
-          file: ./backend/Dockerfile  # Ensure the correct Dockerfile is used
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/your-image-name:latest
           cache-from: type=local,src=/tmp/.buildx-cache
