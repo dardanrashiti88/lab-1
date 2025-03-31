@@ -39,7 +39,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          docker-compose -f docker-compose.yml run --rm backend pytest
+          docker-compose -f docker-compose.yml
 
       - name: Push Docker images to DockerHub (optional)
         if: github.ref == 'refs/heads/main'
