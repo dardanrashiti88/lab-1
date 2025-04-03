@@ -60,4 +60,3 @@ jobs:
         run: |
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/your-image-name:latest
           docker run -d --name my_python_app -p 5000:5000 ${{ secrets.DOCKERHUB_USERNAME }}/your-image-name:latest
-
